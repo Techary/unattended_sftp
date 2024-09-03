@@ -53,7 +53,7 @@ try {
     $session.Open($sessionOptions)
 
     # Run the appropriate operation based on the parameter
-    switch ($OperationMode) {
+    switch ($Mode) {
         "import" { write-verbose "Starting import";.\import.ps1 -Session $session }
         "export" { write-verbose "Starting export";.\export.ps1 -Session $session }
     }
