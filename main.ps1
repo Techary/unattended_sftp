@@ -8,7 +8,8 @@ param (
 $envFileContent = Get-Content .env
 $envFileContent | ForEach-Object {
     $name, $value = $_.Split('=', 2)
-    $value = $value.Trim('"')  # Remove any surrounding quotes if present
+    # Remove any surrounding quotes if present
+    $value = $value.Trim('"')
     # Check if the value is blank (but allow 'passphrase_path' to be blank)
     if ($name -ne "passphrase_path" -and ([string]::IsNullOrWhiteSpace($value))) {
         throw "Environment variable '$name' is required and cannot be blank."

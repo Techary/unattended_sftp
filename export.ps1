@@ -22,6 +22,7 @@ foreach ($path in $env:local_export_path) {
             $transferResult.Check()  # Check for errors
             if (!$transferResult.error) {
                 Write-Host "Uploaded '$($file.Name)' to '$remoteFilePath'"
+                remove-item $file.FullName -foce
             } else {
                 Write-Host "Failed to upload '$($file.Name)'"
             }
@@ -32,5 +33,6 @@ foreach ($path in $env:local_export_path) {
         Write-Host "Error: $($_.Exception.Message)"
         #exit 1
     }
+
 }
 Write-Host "Export script completed successfully."
