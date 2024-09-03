@@ -10,7 +10,7 @@ foreach ($path in $env:local_export_path) {
         # Iterate through each file in the directory
         foreach ($file in $files) {
             # Construct the correct remote file path
-            $remoteFilePath = Join-Path $env:remote_export_path $file.Name
+            $remoteFilePath = $env:remote_export_path + "/" + $file.Name
             # Set transfer options to avoid setting permissions or timestamps
             $transferOptions = New-Object WinSCP.TransferOptions
             $transferOptions.TransferMode = [WinSCP.TransferMode]::Binary
@@ -20,9 +20,9 @@ foreach ($path in $env:local_export_path) {
             # Upload the file to the remote directory
             $transferResult = $Session.PutFiles($file.FullName, $remoteFilePath, $False, $transferOptions)
             $transferResult.Check()  # Check for errors
-            if (!$transferResult.error) {
+            if ($transferResult.IsSuccess) {
                 Write-Host "Uploaded '$($file.Name)' to '$remoteFilePath'"
-                remove-item $file.FullName -foce
+                remove-item $file.FullName -force
             } else {
                 Write-Host "Failed to upload '$($file.Name)'"
             }

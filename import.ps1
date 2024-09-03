@@ -19,7 +19,7 @@ foreach ($path in $env:remote_import_path){
             $transferOptions.TransferMode = [WinSCP.TransferMode]::Binary
             write-verbose "Moving $($fileInfo.Name)"
             $transferResult = $session.GetFileToDirectory($path + "/" + $fileInfo.Name, $env:local_import_path, $False, $transferOptions)
-            if (!$transferResult.error) {
+            if ($transferResult.IsSuccess) {
                 Write-Host "Downloaded '$($fileInfo.Name)' to '$localFilePath'"
             } else {
                 Write-Host "Failed to download '$($fileInfo.Name)'"
