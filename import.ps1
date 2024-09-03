@@ -25,7 +25,7 @@ foreach ($path in $env:remote_import_path){
             $transferOptions = New-Object WinSCP.TransferOptions
             $transferOptions.TransferMode = [WinSCP.TransferMode]::Binary
 
-            $transferResult = $session.GetFileToDirectory($env:remote_import_path + "/" + $fileInfo.Name, $env:local_import_path, $False, $transferOptions)
+            $transferResult = $session.GetFileToDirectory($path + "/" + $fileInfo.Name, $env:local_import_path, $False, $transferOptions)
             if (!$transferResult.error) {
                 Write-Host "Downloaded '$($fileInfo.Name)' to '$localFilePath'"
             } else {
