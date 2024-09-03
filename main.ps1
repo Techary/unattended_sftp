@@ -54,8 +54,8 @@ try {
 
     # Run the appropriate operation based on the parameter
     switch ($OperationMode) {
-        "import" { .\import.ps1 -Session $session }
-        "export" { .\export.ps1 -Session $session }
+        "import" { write-verbose "Starting import";.\import.ps1 -Session $session }
+        "export" { write-verbose "Starting export";.\export.ps1 -Session $session }
     }
     
 }
