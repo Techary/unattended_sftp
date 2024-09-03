@@ -46,7 +46,7 @@ if($env:passphrase_path){
 }
 $sessionOptions.SshHostKeyFingerprint = $env:SshHostKeyFingerprint 
 #Create a new empty WinSCP session
-$session = New-Object WinSCP.Session
+[WinSCP.Session]$session = New-Object WinSCP.Session
 try {
     #Fill the session with the .env session options
     $session.Open($sessionOptions)
