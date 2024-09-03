@@ -1,5 +1,6 @@
 param(
-    [Parameter][WinSCP.Session]$Session
+    [Parameter(Mandatory=$true)]
+    [WinSCP.Session]$Session
 )
 
 foreach ($path in $env:remote_import_path){
