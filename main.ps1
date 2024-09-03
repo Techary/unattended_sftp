@@ -4,8 +4,6 @@ param (
     [ValidateSet("import", "export")]
     [string]$Mode
 )
-#Load WinSCP DLL
-Add-Type -Path $env:winscp_path
 # Load the .env file and set environment variables
 $envFileContent = Get-Content .env
 $envFileContent | ForEach-Object {
@@ -23,6 +21,8 @@ $envFileContent | ForEach-Object {
         Set-Content -Path "env:\$name" -Value $value
     }
 }
+#Load WinSCP DLL
+Add-Type -Path $env:winscp_path
 . .\import.ps1
 . .\export.ps1
 # Initialize session options from .env
