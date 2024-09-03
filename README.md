@@ -45,11 +45,11 @@ local_export_path=C:\Local\Export\Path
    - To run the import or export process, invoke the `main.ps1` script with the appropriate operation mode.
 
    ```powershell
-   .\main.ps1 -action "import"
-   .\main.ps1 -action "export"
+   .\main.ps1 -mode "import"
+   .\main.ps1 -mode "export"
    ```
 
-   - `action` should be either `"import"` or `"export"`.
+   - `mode` should be either `"import"` or `"export"`.
 
 2. **Customization**
    - Modify the `.env` file to suit your environment and directory structure.
