@@ -29,11 +29,11 @@ try {
     $session.Open($sessionOptions)
 
     # Run the appropriate operation based on the parameter
-    if ($OperationMode -eq "import") {
-        Import-Files -Session $session
-    } elseif ($OperationMode -eq "export") {
-        Export-Files -Session $session
+    switch ($OperationMode) {
+        "import" { Import-Files -Session $session }
+        "export" { Export-Files -Session $session }
     }
+    
 }
 finally {
     # Ensure the session is closed
