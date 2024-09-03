@@ -4,8 +4,10 @@ param(
 
 foreach ($path in $env:remote_import_path){
     try{
+        write-verbose "Searching in $path"
         # List files in the remote directory
         $directoryInfo = $session.ListDirectory($Path)
+        write-verbose "Found $($directoryinfo.files)"
 
         # Iterate through each file in the directory
         foreach ($fileInfo in $directoryInfo.Files) {
@@ -24,7 +26,7 @@ foreach ($path in $env:remote_import_path){
             $localFilePath = Join-Path $env:local_import_path $fileInfo.Name
             $transferOptions = New-Object WinSCP.TransferOptions
             $transferOptions.TransferMode = [WinSCP.TransferMode]::Binary
-
+            write-verbose "Moving $($fileInfo.Name)"
             $transferResult = $session.GetFileToDirectory($path + "/" + $fileInfo.Name, $env:local_import_path, $False, $transferOptions)
             if (!$transferResult.error) {
                 Write-Host "Downloaded '$($fileInfo.Name)' to '$localFilePath'"

@@ -20,6 +20,7 @@ $envFileContent | ForEach-Object {
     } else {
         Set-Content -Path "env:\$name" -Value $value
     }
+    write-verbose "Setting $name to $value"
 }
 #Load WinSCP DLL
 Add-Type -Path $env:winscp_path
@@ -34,8 +35,10 @@ $sessionOptions.UserName = $env:sftp_username
 $sessionOptions.SshPrivateKeyPath = $env:privkey_path
 #Check to see if passphrase_path is set. If not, move on
 if($env:passphrase_path){
+    write-verbose "Passphrase path is present"
     #Check to see if the passphrase exists for privkey
     if (!(test-path $env:passphrase_path)){
+        write-verbose "Passphrase is not present"
         #If not, ask for it, encrypted
         $securePassphrase = Read-Host "Enter passphrase for the private key" -AsSecureString
         #Save it to disk
