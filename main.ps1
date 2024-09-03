@@ -24,8 +24,6 @@ $envFileContent | ForEach-Object {
 }
 #Load WinSCP DLL
 Add-Type -Path $env:winscp_path
-. .\import.ps1
-. .\export.ps1
 # Initialize session options from .env
 $sessionOptions = New-Object WinSCP.SessionOptions
 $sessionOptions.Protocol = [WinSCP.Protocol]::Sftp
@@ -56,8 +54,8 @@ try {
 
     # Run the appropriate operation based on the parameter
     switch ($OperationMode) {
-        "import" { Import-Files -Session $session }
-        "export" { Export-Files -Session $session }
+        "import" { .\import.ps1 -Session $session }
+        "export" { .\export.ps1 -Session $session }
     }
     
 }
