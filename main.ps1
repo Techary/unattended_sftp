@@ -31,7 +31,7 @@ $sessionOptions.Protocol = [WinSCP.Protocol]::Sftp
 $sessionOptions.HostName = $env:sftp_hostname
 $sessionOptions.PortNumber = $env:sftp_port
 $sessionOptions.UserName = $env:sftp_username 
-$sessionOptions.SshPrivateKeyPath = $privateKeyPath
+$sessionOptions.SshPrivateKeyPath = $env:privkey_path
 #Check to see if passphrase_path is set. If not, move on
 if($env:passphrase_path){
     #Check to see if the passphrase exists for privkey
