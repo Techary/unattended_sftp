@@ -26,17 +26,17 @@ The scripts rely on a `.env` file for configuration. This file should be placed 
 #### Example .env File
 
 ```plaintext
-sftp_host=sftp.example.com
-sftp_port=10022
-sftp_user=username
-winscp_path=C:\Path\To\WinSCPnet.dll
-passphrase_path=C:\Path\To\PrivateKey.ppk
-ssh_host_key_fingerprint=ssh-rsa 2048 xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx
-
-remote_import_path=/remote/import/path
-local_import_path=C:\Local\Import\Path
-remote_export_path=/remote/export/path
-local_export_path=C:\Local\Export\Path
+winscp_path = C:\Users\your_name\AppData\Local\Programs\WinSCP\WinSCPnet.dll
+sftp_hostname = sftp.host.name
+sftp_port = 22
+sftp_username = sftp_user
+local_export_path = 
+remote_export_path =
+local_import_path = 
+remote_import_path =
+privkey_path = <userprofile>\.ssh\winscpPrivKey.ppk
+passphrase_path = C:\path\to\passphrase.txt
+SshHostKeyFingerprint = <sh-rsa fingerprint>
 ```
 
 ### Usage
