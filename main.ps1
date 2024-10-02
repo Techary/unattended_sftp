@@ -5,7 +5,9 @@ param (
     [string]$Mode
 )
 # Load the .env file and set environment variables
-$envFileContent = Get-Content .env
+$scriptPath = $PSScriptRoot
+$envPath = Join-Path $scriptPath ".env"
+$envFileContent = Get-Content $envPath 
 $envFileContent | ForEach-Object {
     $name, $value = $_.Split('=', 2)
     # Remove any surrounding quotes if present
@@ -49,14 +51,16 @@ if($env:passphrase_path){
 $sessionOptions.SshHostKeyFingerprint = $env:SshHostKeyFingerprint 
 #Create a new empty WinSCP session
 [WinSCP.Session]$session = New-Object WinSCP.Session
+$importPath = Join-Path $scriptPath "import.ps1"
+$exportPath = Join-Path $scriptPath "export.ps1"
 try {
     #Fill the session with the .env session options
     $session.Open($sessionOptions)
 
     # Run the appropriate operation based on the parameter
     switch ($Mode) {
-        "import" { write-verbose "Starting import";.\import.ps1 -Session $session }
-        "export" { write-verbose "Starting export";.\export.ps1 -Session $session }
+        "import" { write-verbose "Starting import";& $importPath -Session $session }
+        "export" { write-verbose "Starting export";& $importPath -Session $session }
     }
     
 }
