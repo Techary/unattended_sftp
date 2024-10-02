@@ -60,7 +60,7 @@ try {
     # Run the appropriate operation based on the parameter
     switch ($Mode) {
         "import" { write-verbose "Starting import";& $importPath -Session $session }
-        "export" { write-verbose "Starting export";& $importPath -Session $session }
+        "export" { write-verbose "Starting export";& $exportPath -Session $session }
     }
     
 }
