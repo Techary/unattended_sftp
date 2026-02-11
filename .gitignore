@@ -1,2 +1,27 @@
-passphrase.txt
+# Configuration with secrets
 .env
+passphrase.txt
+*.ppk
+
+# Log files
+logs/
+*.log
+
+# Backup files
+backups/
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# PowerShell
+*.ps1xml
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Test output
+TestResults/
