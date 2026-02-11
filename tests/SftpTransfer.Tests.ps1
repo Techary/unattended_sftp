@@ -110,39 +110,43 @@ Describe "Backup-LocalFile" {
 }
 
 Describe "Clear-OldBackups" {
-    BeforeEach {
-        $script:backupDir = Join-Path $TestDrive "backups_cleanup_$(Get-Random)"
-        New-Item -Path $script:backupDir -ItemType Directory -Force | Out-Null
-
-        # Create old dated folders
-        $oldDate = (Get-Date).AddDays(-10).ToString("yyyy-MM-dd")
-        $recentDate = (Get-Date).AddDays(-3).ToString("yyyy-MM-dd")
-
-        $oldFolder = Join-Path $script:backupDir $oldDate
-        $recentFolder = Join-Path $script:backupDir $recentDate
-
-        New-Item -Path $oldFolder -ItemType Directory -Force | Out-Null
-        New-Item -Path $recentFolder -ItemType Directory -Force | Out-Null
-
-        "old" | Out-File (Join-Path $oldFolder "old.txt")
-        "recent" | Out-File (Join-Path $recentFolder "recent.txt")
-    }
-
     It "Should remove folders older than retention period" {
-        Clear-OldBackups -BackupPath $script:backupDir -RetentionDays 7
+        $backupDir = Join-Path $TestDrive "backups_old_$(Get-Random)"
+        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
 
+        # Create a folder dated 10 days ago
         $oldDate = (Get-Date).AddDays(-10).ToString("yyyy-MM-dd")
-        $oldFolder = Join-Path $script:backupDir $oldDate
+        $oldFolder = Join-Path $backupDir $oldDate
+        New-Item -Path $oldFolder -ItemType Directory -Force | Out-Null
+        "content" | Out-File (Join-Path $oldFolder "file.txt")
 
+        # Verify folder exists before cleanup
+        Test-Path $oldFolder | Should -Be $true
+
+        # Run cleanup with 7 day retention (folder is 10 days old, should be removed)
+        Clear-OldBackups -BackupPath $backupDir -RetentionDays 7
+
+        # Folder should be gone
         Test-Path $oldFolder | Should -Be $false
     }
 
     It "Should keep folders within retention period" {
-        Clear-OldBackups -BackupPath $script:backupDir -RetentionDays 7
+        $backupDir = Join-Path $TestDrive "backups_recent_$(Get-Random)"
+        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
 
+        # Create a folder dated 3 days ago
         $recentDate = (Get-Date).AddDays(-3).ToString("yyyy-MM-dd")
-        $recentFolder = Join-Path $script:backupDir $recentDate
+        $recentFolder = Join-Path $backupDir $recentDate
+        New-Item -Path $recentFolder -ItemType Directory -Force | Out-Null
+        "content" | Out-File (Join-Path $recentFolder "file.txt")
 
+        # Verify folder exists before cleanup
+        Test-Path $recentFolder | Should -Be $true
+
+        # Run cleanup with 7 day retention (folder is 3 days old, should be kept)
+        Clear-OldBackups -BackupPath $backupDir -RetentionDays 7
+
+        # Folder should still exist
         Test-Path $recentFolder | Should -Be $true
     }
 }

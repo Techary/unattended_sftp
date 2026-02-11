@@ -273,16 +273,16 @@ function Clear-OldBackups {
     $cutoffDate = (Get-Date).AddDays(-$RetentionDays)
 
     # Remove old dated folders
-    Get-ChildItem -Path $BackupPath -Directory |
-        Where-Object {
-            # Try to parse folder name as date
-            $folderDate = $null
-            if ([DateTime]::TryParseExact($_.Name, "yyyy-MM-dd", $null, [System.Globalization.DateTimeStyles]::None, [ref]$folderDate)) {
-                return $folderDate -lt $cutoffDate
+    Get-ChildItem -Path $BackupPath -Directory | ForEach-Object {
+        $folder = $_
+        $folderDate = $null
+        # Parse folder name as date using invariant culture
+        if ([DateTime]::TryParseExact($folder.Name, "yyyy-MM-dd", [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::None, [ref]$folderDate)) {
+            if ($folderDate -lt $cutoffDate) {
+                Remove-Item -Path $folder.FullName -Recurse -Force -ErrorAction SilentlyContinue
             }
-            return $false
-        } |
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
 
     # Also clean any loose files older than retention
     Get-ChildItem -Path $BackupPath -File |
