@@ -275,7 +275,7 @@ function Clear-OldBackups {
     # Remove old dated folders
     Get-ChildItem -Path $BackupPath -Directory | ForEach-Object {
         $folder = $_
-        $folderDate = $null
+        [DateTime]$folderDate = [DateTime]::MinValue
         # Parse folder name as date using invariant culture
         if ([DateTime]::TryParseExact($folder.Name, "yyyy-MM-dd", [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::None, [ref]$folderDate)) {
             if ($folderDate -lt $cutoffDate) {
