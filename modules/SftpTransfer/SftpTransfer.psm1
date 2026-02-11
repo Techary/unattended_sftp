@@ -290,5 +290,103 @@ function Clear-OldBackups {
         Remove-Item -Force -ErrorAction SilentlyContinue
 }
 
+function Get-RemotePathSeparator {
+    <#
+    .SYNOPSIS
+        Detects the path separator used in a remote path.
+    .DESCRIPTION
+        Automatically detects whether the remote server uses Unix-style (/)
+        or Windows-style (\) path separators by examining the path format.
+    .PARAMETER Path
+        A remote path string to analyze.
+    .PARAMETER ForceSeparator
+        Optional. Force a specific separator ('/' or '\') instead of auto-detecting.
+    .OUTPUTS
+        String containing the detected path separator ('/' or '\').
+    .EXAMPLE
+        Get-RemotePathSeparator -Path "/remote/path"
+        # Returns: /
+    .EXAMPLE
+        Get-RemotePathSeparator -Path "C:\remote\path"
+        # Returns: \
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [Parameter()]
+        [ValidateSet('/', '\')]
+        [string]$ForceSeparator = $null
+    )
+
+    # If forced, return that
+    if ($ForceSeparator) {
+        return $ForceSeparator
+    }
+
+    # Check for Windows-style paths:
+    # - Starts with drive letter (C:\, D:\, etc.)
+    # - Contains backslashes
+    # - UNC paths (\\server\share)
+    if ($Path -match '^[A-Za-z]:[\\/]' -or $Path -match '^\\\\' -or ($Path -match '\\' -and $Path -notmatch '/')) {
+        return '\'
+    }
+
+    # Default to Unix-style (most SFTP servers are Unix/Linux)
+    return '/'
+}
+
+function Join-RemotePath {
+    <#
+    .SYNOPSIS
+        Joins path segments using the appropriate separator for the remote OS.
+    .DESCRIPTION
+        Combines path segments using the detected or specified path separator.
+        Handles mixed separators and normalizes the result.
+    .PARAMETER BasePath
+        The base path (e.g., remote directory).
+    .PARAMETER ChildPath
+        The child path or filename to append.
+    .PARAMETER Separator
+        Optional. Force a specific separator. If not specified, auto-detects from BasePath.
+    .OUTPUTS
+        String containing the joined path.
+    .EXAMPLE
+        Join-RemotePath -BasePath "/remote/dir" -ChildPath "file.txt"
+        # Returns: /remote/dir/file.txt
+    .EXAMPLE
+        Join-RemotePath -BasePath "C:\remote\dir" -ChildPath "file.txt"
+        # Returns: C:\remote\dir\file.txt
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$BasePath,
+
+        [Parameter(Mandatory)]
+        [string]$ChildPath,
+
+        [Parameter()]
+        [ValidateSet('/', '\')]
+        [string]$Separator = $null
+    )
+
+    # Detect separator if not specified
+    if (-not $Separator) {
+        $Separator = Get-RemotePathSeparator -Path $BasePath
+    }
+
+    # Remove trailing separators from base path
+    $BasePath = $BasePath.TrimEnd('/', '\')
+
+    # Remove leading separators from child path
+    $ChildPath = $ChildPath.TrimStart('/', '\')
+
+    # Join with the appropriate separator
+    return "$BasePath$Separator$ChildPath"
+}
+
 Export-ModuleMember -Function New-SftpSession, Test-SftpConnection, Get-FilteredFiles,
-                              Backup-LocalFile, Clear-OldBackups
+                              Backup-LocalFile, Clear-OldBackups, Get-RemotePathSeparator,
+                              Join-RemotePath

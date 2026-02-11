@@ -49,6 +49,7 @@ $retryBackoff = Get-ConfigValue $Config "retry_exponential_backoff" -Default $tr
 $backupEnabled = Get-ConfigValue $Config "backup_enabled" -Default $false -Type "bool"
 $backupPath = Get-ConfigValue $Config "backup_path" -Default "backups"
 $backupRetention = Get-ConfigValue $Config "backup_retention_days" -Default 7 -Type "int"
+$remotePathSeparator = Get-ConfigValue $Config "remote_path_separator" -Default $null
 
 # Ensure backup path is absolute
 if ($backupEnabled -and -not [System.IO.Path]::IsPathRooted($backupPath)) {
@@ -87,7 +88,14 @@ foreach ($localPath in $localPaths) {
         $currentFile = 0
         foreach ($file in $files) {
             $currentFile++
-            $remoteFilePath = "$remotePath/$($file.Name)"
+            $joinParams = @{
+                BasePath = $remotePath
+                ChildPath = $file.Name
+            }
+            if ($remotePathSeparator) {
+                $joinParams.Separator = $remotePathSeparator
+            }
+            $remoteFilePath = Join-RemotePath @joinParams
 
             Write-SftpProgress -FileName $file.Name `
                               -CurrentFile $currentFile `

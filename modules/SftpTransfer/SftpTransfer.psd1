@@ -10,7 +10,9 @@
         'Test-SftpConnection',
         'Get-FilteredFiles',
         'Backup-LocalFile',
-        'Clear-OldBackups'
+        'Clear-OldBackups',
+        'Get-RemotePathSeparator',
+        'Join-RemotePath'
     )
     CmdletsToExport = @()
     VariablesToExport = @()

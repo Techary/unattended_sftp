@@ -45,6 +45,7 @@ $retryEnabled = Get-ConfigValue $Config "retry_enabled" -Default $true -Type "bo
 $retryAttempts = Get-ConfigValue $Config "retry_attempts" -Default 3 -Type "int"
 $retryDelay = Get-ConfigValue $Config "retry_delay_seconds" -Default 5 -Type "int"
 $retryBackoff = Get-ConfigValue $Config "retry_exponential_backoff" -Default $true -Type "bool"
+$remotePathSeparator = Get-ConfigValue $Config "remote_path_separator" -Default $null
 
 $result = @{
     Success = $true
@@ -74,7 +75,14 @@ foreach ($remotePath in $remotePaths) {
         $currentFile = 0
         foreach ($fileInfo in $files) {
             $currentFile++
-            $remoteFilePath = "$remotePath/$($fileInfo.Name)"
+            $joinParams = @{
+                BasePath = $remotePath
+                ChildPath = $fileInfo.Name
+            }
+            if ($remotePathSeparator) {
+                $joinParams.Separator = $remotePathSeparator
+            }
+            $remoteFilePath = Join-RemotePath @joinParams
             $localFilePath = Join-Path $localPath $fileInfo.Name
 
             Write-SftpProgress -FileName $fileInfo.Name `

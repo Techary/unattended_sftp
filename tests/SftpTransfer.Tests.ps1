@@ -150,3 +150,94 @@ Describe "Clear-OldBackups" {
         Test-Path $recentFolder | Should -Be $true
     }
 }
+
+Describe "Get-RemotePathSeparator" {
+    Context "Unix-style paths" {
+        It "Should detect forward slash for absolute Unix path" {
+            $separator = Get-RemotePathSeparator -Path "/remote/path/to/files"
+            $separator | Should -Be "/"
+        }
+
+        It "Should detect forward slash for relative Unix path" {
+            $separator = Get-RemotePathSeparator -Path "path/to/files"
+            $separator | Should -Be "/"
+        }
+
+        It "Should default to forward slash for ambiguous paths" {
+            $separator = Get-RemotePathSeparator -Path "filename.txt"
+            $separator | Should -Be "/"
+        }
+    }
+
+    Context "Windows-style paths" {
+        It "Should detect backslash for drive letter path" {
+            $separator = Get-RemotePathSeparator -Path "C:\remote\path"
+            $separator | Should -Be "\"
+        }
+
+        It "Should detect backslash for UNC path" {
+            $separator = Get-RemotePathSeparator -Path "\\server\share\folder"
+            $separator | Should -Be "\"
+        }
+
+        It "Should detect backslash for relative Windows path" {
+            $separator = Get-RemotePathSeparator -Path "folder\subfolder\file.txt"
+            $separator | Should -Be "\"
+        }
+    }
+
+    Context "Force separator" {
+        It "Should use forced forward slash" {
+            $separator = Get-RemotePathSeparator -Path "C:\windows\path" -ForceSeparator "/"
+            $separator | Should -Be "/"
+        }
+
+        It "Should use forced backslash" {
+            $separator = Get-RemotePathSeparator -Path "/unix/path" -ForceSeparator "\"
+            $separator | Should -Be "\"
+        }
+    }
+}
+
+Describe "Join-RemotePath" {
+    Context "Unix-style paths" {
+        It "Should join Unix paths with forward slash" {
+            $result = Join-RemotePath -BasePath "/remote/dir" -ChildPath "file.txt"
+            $result | Should -Be "/remote/dir/file.txt"
+        }
+
+        It "Should handle trailing slash in base path" {
+            $result = Join-RemotePath -BasePath "/remote/dir/" -ChildPath "file.txt"
+            $result | Should -Be "/remote/dir/file.txt"
+        }
+
+        It "Should handle leading slash in child path" {
+            $result = Join-RemotePath -BasePath "/remote/dir" -ChildPath "/file.txt"
+            $result | Should -Be "/remote/dir/file.txt"
+        }
+    }
+
+    Context "Windows-style paths" {
+        It "Should join Windows paths with backslash" {
+            $result = Join-RemotePath -BasePath "C:\remote\dir" -ChildPath "file.txt"
+            $result | Should -Be "C:\remote\dir\file.txt"
+        }
+
+        It "Should handle trailing backslash in base path" {
+            $result = Join-RemotePath -BasePath "C:\remote\dir\" -ChildPath "file.txt"
+            $result | Should -Be "C:\remote\dir\file.txt"
+        }
+
+        It "Should handle UNC paths" {
+            $result = Join-RemotePath -BasePath "\\server\share" -ChildPath "file.txt"
+            $result | Should -Be "\\server\share\file.txt"
+        }
+    }
+
+    Context "Force separator" {
+        It "Should use forced separator regardless of path format" {
+            $result = Join-RemotePath -BasePath "/unix/path" -ChildPath "file.txt" -Separator "\"
+            $result | Should -Be "/unix/path\file.txt"
+        }
+    }
+}
