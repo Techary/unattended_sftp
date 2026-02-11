@@ -110,16 +110,16 @@ Describe "Backup-LocalFile" {
 }
 
 Describe "Clear-OldBackups" {
-    BeforeAll {
-        $backupDir = Join-Path $TestDrive "backups_cleanup"
-        New-Item -Path $backupDir -ItemType Directory -Force | Out-Null
+    BeforeEach {
+        $script:backupDir = Join-Path $TestDrive "backups_cleanup_$(Get-Random)"
+        New-Item -Path $script:backupDir -ItemType Directory -Force | Out-Null
 
         # Create old dated folders
         $oldDate = (Get-Date).AddDays(-10).ToString("yyyy-MM-dd")
         $recentDate = (Get-Date).AddDays(-3).ToString("yyyy-MM-dd")
 
-        $oldFolder = Join-Path $backupDir $oldDate
-        $recentFolder = Join-Path $backupDir $recentDate
+        $oldFolder = Join-Path $script:backupDir $oldDate
+        $recentFolder = Join-Path $script:backupDir $recentDate
 
         New-Item -Path $oldFolder -ItemType Directory -Force | Out-Null
         New-Item -Path $recentFolder -ItemType Directory -Force | Out-Null
@@ -129,19 +129,19 @@ Describe "Clear-OldBackups" {
     }
 
     It "Should remove folders older than retention period" {
-        Clear-OldBackups -BackupPath $backupDir -RetentionDays 7
+        Clear-OldBackups -BackupPath $script:backupDir -RetentionDays 7
 
         $oldDate = (Get-Date).AddDays(-10).ToString("yyyy-MM-dd")
-        $oldFolder = Join-Path $backupDir $oldDate
+        $oldFolder = Join-Path $script:backupDir $oldDate
 
         Test-Path $oldFolder | Should -Be $false
     }
 
     It "Should keep folders within retention period" {
-        Clear-OldBackups -BackupPath $backupDir -RetentionDays 7
+        Clear-OldBackups -BackupPath $script:backupDir -RetentionDays 7
 
         $recentDate = (Get-Date).AddDays(-3).ToString("yyyy-MM-dd")
-        $recentFolder = Join-Path $backupDir $recentDate
+        $recentFolder = Join-Path $script:backupDir $recentDate
 
         Test-Path $recentFolder | Should -Be $true
     }

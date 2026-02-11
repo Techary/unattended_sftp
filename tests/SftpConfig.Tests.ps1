@@ -44,9 +44,9 @@ retry_attempts = 5
         It "Should handle comma-separated values as arrays" {
             $config = Import-SftpConfig -Path $testEnvPath -Mode "export"
 
-            $config.local_export_path | Should -BeOfType [System.Object[]]
             $config.local_export_path.Count | Should -Be 2
             $config.local_export_path[0] | Should -Be "C:\export1"
+            $config.local_export_path[1] | Should -Be "C:\export2"
         }
 
         It "Should convert boolean values" {
@@ -152,7 +152,7 @@ privkey_path = C:\keys\test.ppk
 SshHostKeyFingerprint = ssh-rsa 2048 xx:xx
 log_enabled = true
 retry_attempts = 3
-email_to = user1@test.com,user2@test.com
+notify_graph_to = user1@test.com,user2@test.com
 "@ | Out-File $testEnvPath -Encoding utf8
         $script:testConfig = Import-SftpConfig -Path $testEnvPath -Mode "healthcheck"
     }
@@ -179,8 +179,8 @@ email_to = user1@test.com,user2@test.com
     }
 
     It "Should convert to array" {
-        $value = Get-ConfigValue $script:testConfig "email_to" -Type "array"
-        $value | Should -BeOfType [System.Object[]]
+        $value = Get-ConfigValue $script:testConfig "notify_graph_to" -Type "array"
         $value.Count | Should -Be 2
+        $value[0] | Should -Be "user1@test.com"
     }
 }
